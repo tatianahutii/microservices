@@ -1,0 +1,5 @@
+id,name,description,picture,price,stock
+1,Product one,Product number one in our shop,/img/product1.webp,1,2
+2,Product two,Product number two in our shop,/img/product2.webp,5,0
+3,Product three,Product number three in our shop,/img/product3.webp,10,1
+4,Product four,Product number four in our shop,/img/product4.webp,100,4

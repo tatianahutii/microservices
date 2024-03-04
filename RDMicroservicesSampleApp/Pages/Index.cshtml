@@ -1,0 +1,150 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    .card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-body {
+        text-align: center;
+    }
+
+    .title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 15px;
+    }
+
+    .card-title, .price {
+        margin-bottom: 0;
+    }
+
+    .quantity {
+        margin-bottom: 15px;
+    }
+
+    .action-container {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%); /* Center the container */
+        text-align: center;
+    }
+
+    .cart-icon {
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        padding: 10px;
+        font-size: 20px;
+        line-height: 20px;
+        display: inline-block; /* Enable text-align center to work */
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+        border: none; /* Remove border for button */
+    }
+
+    .card:hover .cart-icon {
+        opacity: 1;
+    }
+
+    .cart-icon:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .zoomed-in {
+        position: fixed;
+        z-index: 10;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1); /* Adjust scale as needed */
+        transition: transform 0.3s ease;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 5;
+    }
+</style>
+
+<h3 class="display-4">Welcome to super simple demo shop!</h3>
+<p></p>
+<form method="post">
+    <div class="row">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="@product[3]" class="card-img-top" alt="@product[1]" onclick="toggleZoom(this)">
+                    <div class="card-body">
+                        <div class="title-container">
+                            <h5 class="card-title">@product[1]</h5>
+                            <h5 class="price">@product[4] Eur</h5>
+                        </div>                        
+                        <p class="card-text">@product[2]</p>
+                        
+                        @if (int.Parse(product[5]) > 0)
+                        {
+                            <div style="color:green" class="quantity">@product[5] item(s) in stock</div>
+                            <button type="submit" class="cart-icon" name="handler" value="Buy" asp-route-id="@product[0]">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <div style="color:coral" class="quantity">Out of stock</div>
+                            <button type="submit" class="cart-icon" name="handler" value="Buy" asp-route-id="@product[0]" disabled>
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+<script>
+    function toggleZoom(element) {
+        // Detect if the element or its parent is zoomed-in
+        let isZoomed = element.classList.contains('zoomed-in') || element.parentElement.classList.contains('zoomed-in');
+        const overlayExists = document.querySelector('.overlay');
+
+        // Remove existing zoom and overlays
+        if (overlayExists) {
+            document.body.removeChild(overlayExists);
+        }
+        document.querySelectorAll('.zoomed-in').forEach(zoomedElement => {
+            zoomedElement.classList.remove('zoomed-in');
+        });
+
+        // Zoom in logic
+        if (!isZoomed) {
+            // Create an overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.onclick = toggleZoom;
+            document.body.appendChild(overlay);
+
+            // If it's an image inside a card, target the card for zooming
+            const targetElement = element.classList.contains('card-img-top') ? element.closest('.card') : element;
+            targetElement.classList.add('zoomed-in');
+
+            // Dynamically adjust the scale based on the viewport and element size
+            // Example: Adjust `transform` property based on calculations (omitted for brevity)
+            // targetElement.style.transform = `translate(-50%, -50%) scale(${calculatedScale})`;
+        }
+    }
+</script>
